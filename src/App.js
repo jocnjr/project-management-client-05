@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Switch, Route } from "react-router-dom";
 
@@ -13,116 +13,82 @@ import Navbar from "./components/navbar/Navbar";
 import Signup from "./components/auth/Signup";
 import Login from "./components/auth/Login";
 import UserContext from "./context/UserContext";
+import Home from "./components/Home";
+import Route404 from "./components/Route404";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedInUser: null
-    };
-    this.service = new AuthService();
-    this.getTheUser = this.getTheUser.bind(this);
-  }
+const App = () => {
+  const [loggedInUser, setUser] = useState(null);
 
-  fetchUser() {
-    if (this.state.loggedInUser === null) {
-      this.service
-        .loggedin()
-        .then(response => {
-          this.setState({
-            loggedInUser: response
-          });
-        })
-        .catch(err => {
-          this.setState({
-            loggedInUser: false
-          });
-        });
+  useEffect(() => {
+    if (!loggedInUser) fetchUser();
+  });
+
+  const fetchUser = async () => {
+    const service = new AuthService();
+    if (loggedInUser === null) {
+      try {
+        const response = await service.loggedin();
+        setUser(response);
+      } catch (error) {
+        setUser(null);
+      }
     }
-  }
+  };
 
-  componentDidMount() {
-    this.fetchUser();
-  }
+  const getTheUser = userObj => {
+    setUser(userObj);
+  };
 
-  getTheUser(userObj) {
-    this.setState({
-      loggedInUser: userObj
-    });
-  }
-
-  render() {
-    if (this.state.loggedInUser) {
-      return (
-        <UserContext.Provider value={this.state.loggedInUser}>
-          <div className="App">
-            <Navbar
-              userInSession={this.state.loggedInUser}
-              getUser={this.getTheUser}
-            />
-            <Switch>
-              <ProtectedRoute
-                user={this.state.loggedInUser}
-                exact
-                path="/projects"
-                component={ProjectList}
-              />
+  return (
+    <UserContext.Provider value={loggedInUser}>
+      <div className="App">
+        <Navbar getUser={getTheUser} />
+        <Switch>
+          {loggedInUser ? (
+            <>
+              <ProtectedRoute exact path="/projects" component={ProjectList} />
               <ProtectedRoute
                 exact
                 path="/projects/:id/tasks/:taskId"
                 component={TaskDetails}
               />
               <ProtectedRoute
-                user={this.state.loggedInUser}
                 exact
                 path="/projects/:id"
                 component={ProjectDetails}
               />
-            </Switch>
-          </div>
-        </UserContext.Provider>
-      );
-    } else {
-      return (
-        <UserContext.Provider value={this.state.loggedInUser}>
-          <div className="App">
-            <Navbar userInSession={this.state.loggedInUser} />
-            <Switch>
+              <ProtectedRoute exact path="/" component={Home} />
+            </>
+          ) : (
+            <>
               <Route
                 exact
                 path="/signup"
-                render={props => (
-                  <Signup getUser={this.getTheUser} {...props} />
-                )}
+                render={props => <Signup getUser={getTheUser} {...props} />}
               />
               <Route
                 exact
                 path="/"
-                render={props => <Login getUser={this.getTheUser} {...props} />}
+                render={props => <Login getUser={getTheUser} {...props} />}
               />
               <ProtectedRoute
-                user={this.state.loggedInUser}
                 exact
                 path="/projects/:id"
                 component={ProjectDetails}
               />
-              <ProtectedRoute
-                user={this.state.loggedInUser}
-                exact
-                path="/projects"
-                component={ProjectList}
-              />
+              <ProtectedRoute exact path="/projects" component={ProjectList} />
               <ProtectedRoute
                 exact
                 path="/projects/:id/tasks/:taskId"
                 component={TaskDetails}
               />
-            </Switch>
-          </div>
-        </UserContext.Provider>
-      );
-    }
-  }
-}
+            </>
+          )}
+          <Route component={Route404} />
+        </Switch>
+      </div>
+    </UserContext.Provider>
+  );
+};
 
 export default App;

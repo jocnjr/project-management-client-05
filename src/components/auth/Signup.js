@@ -31,7 +31,12 @@ class Signup extends Component {
         this.props.getUser(response);
         this.props.history.push("/projects");
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        this.setState({
+          message: error.message
+        });
+        console.log(error);
+      });
   }
 
   handleChange(event) {
@@ -46,14 +51,14 @@ class Signup extends Component {
       <div className="section">
         <div className="container" style={{ width: "50vw" }}>
           <form onSubmit={this.handleFormSubmit}>
-            <label> Username: </label>
+            <label htmlFor="username"> Username: </label>
             <Input
               type="text"
               name="username"
               value={this.state.username}
               handleChange={this.handleChange}
             />
-            <label> Password: </label>
+            <label htmlFor="password"> Password: </label>
 
             <Input
               type="password"
@@ -63,7 +68,9 @@ class Signup extends Component {
             />
             <input type="submit" value="Signup" />
           </form>
-
+          {this.state.message && (
+            <p className="notification is-danger">{this.state.message}</p>
+          )}
           <p>
             Already have account ?<Link to={"/"}> Login </Link>
           </p>

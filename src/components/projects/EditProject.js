@@ -1,29 +1,18 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Input from "../forms/Input";
 import Textarea from "../forms/Textarea";
 
-class EditProject extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: this.props.theProject.title,
-      description: this.props.theProject.description
-    };
-    this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.handleChangeTitle = this.handleChangeTitle.bind(this);
-    this.handleChangeDesc = this.handleChangeDesc.bind(this);
-  }
+const EditProject = ({ theProject, getTheProject }) => {
+  const [title, handleTitle] = useState(theProject.title);
+  const [description, handleDescription] = useState(theProject.description);
 
-  handleFormSubmit(event) {
-    const title = this.state.title;
-    const description = this.state.description;
-
+  const handleFormSubmit = event => {
     event.preventDefault();
 
     axios
       .put(
-        `${process.env.REACT_APP_API_URL}/projects/${this.props.theProject._id}`,
+        `${process.env.REACT_APP_API_URL}/projects/${theProject._id}`,
         {
           title,
           description
@@ -31,48 +20,34 @@ class EditProject extends Component {
         { withCredentials: true }
       )
       .then(() => {
-        this.props.getTheProject();
+        getTheProject();
         // after submitting the form, redirect to '/projects'
-        // this.props.history.push('/projects');
+        // history.push("/projects");
       })
       .catch(error => console.log(error));
-  }
+  };
 
-  handleChangeTitle(event) {
-    this.setState({
-      title: event.target.value
-    });
-  }
+  return (
+    <div>
+      <hr />
+      <h3>Edit form</h3>
+      <form onSubmit={handleFormSubmit}>
+        <Input
+          name="title"
+          type="text"
+          value={title}
+          handleChange={e => handleTitle(e.target.value)}
+        />
+        <Textarea
+          name="description"
+          value={description}
+          handleChange={e => handleDescription(e.target.value)}
+        />
 
-  handleChangeDesc(event) {
-    this.setState({
-      description: event.target.value
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <hr />
-        <h3>Edit form</h3>
-        <form onSubmit={this.handleFormSubmit}>
-          <Input
-            name="title"
-            value={this.state.title}
-            handleChange={this.handleChangeTitle}
-          />
-
-          <Textarea
-            name="description"
-            value={this.state.description}
-            handleChange={this.handleChangeDesc}
-          />
-
-          <input className="button" type="submit" value="Submit" />
-        </form>
-      </div>
-    );
-  }
-}
+        <input className="button" type="submit" value="Submit" />
+      </form>
+    </div>
+  );
+};
 
 export default EditProject;

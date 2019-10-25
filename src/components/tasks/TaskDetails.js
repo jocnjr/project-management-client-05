@@ -1,40 +1,34 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-class TaskDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { title: "", description: "" };
-  }
+const TaskDetails = ({ match }) => {
+  const [title, handleTitle] = useState("");
+  const [description, handleDescription] = useState("");
 
-  componentDidMount() {
-    this.getTheTask();
-  }
+  useEffect(() => {
+    if (!title) getTheTask();
+  });
 
-  getTheTask() {
-    const { params } = this.props.match;
-    axios
-      .get(
+  const getTheTask = async () => {
+    const { params } = match;
+    try {
+      const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/projects/${params.id}/tasks/${params.taskId}`,
         { withCredentials: true }
-      )
-      .then(responseFromApi => {
-        const theTask = responseFromApi.data;
-        this.setState(theTask);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
+      );
+      handleTitle(response.data.title);
+      handleDescription(response.data.description);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  render() {
-    return (
-      <div>
-        <h1>{this.state.title}</h1>
-        <p>{this.state.description}</p>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </div>
+  );
+};
 
 export default TaskDetails;
