@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import EditProject from "./EditProject";
 import AddTask from "../tasks/AddTask";
 import UserContext from "../../context/UserContext";
@@ -78,12 +78,14 @@ const ProjectDetails = ({ loggedInUser, history, ...props }) => {
   };
   return (
     <div className="container">
-      <h1 className="title is-1">{project.title}</h1>
+      <h1 className="title">{project.title}</h1>
       <p>{project.description}</p>
       {project.imageUrl && <img src={project.imageUrl} alt={project.title} />}
       <UserContext.Consumer>
         {context => (
-          <p className="title is-6">project by: {context.username}</p>
+          <p className="title is-6">
+            loggedInUser by context: {context.username}
+          </p>
         )}
       </UserContext.Consumer>
       {/* show the task heading only if there are tasks */}

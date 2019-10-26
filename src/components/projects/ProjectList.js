@@ -33,7 +33,7 @@ const ProjectList = () => {
             return (
               <div key={project._id}>
                 <Link to={`/projects/${project._id}`}>
-                  <h3>{project.title}</h3>
+                  <h1 className="title is-2">{project.title}</h1>
                 </Link>
                 {/* 🥁 added so the tasks can be displayed:  🥁 */}
                 <ul>

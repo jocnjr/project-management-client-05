@@ -41,51 +41,61 @@ const App = () => {
 
   return (
     <UserContext.Provider value={loggedInUser}>
-      <div className="App">
+      <div className="section is-hd">
         <Navbar getUser={getTheUser} />
-        <Switch>
-          {loggedInUser ? (
-            <>
-              <ProtectedRoute exact path="/projects" component={ProjectList} />
-              <ProtectedRoute
-                exact
-                path="/projects/:id/tasks/:taskId"
-                component={TaskDetails}
-              />
-              <ProtectedRoute
-                exact
-                path="/projects/:id"
-                component={ProjectDetails}
-              />
-              <ProtectedRoute exact path="/" component={Home} />
-            </>
-          ) : (
-            <>
-              <Route
-                exact
-                path="/signup"
-                render={props => <Signup getUser={getTheUser} {...props} />}
-              />
-              <Route
-                exact
-                path="/"
-                render={props => <Login getUser={getTheUser} {...props} />}
-              />
-              <ProtectedRoute
-                exact
-                path="/projects/:id"
-                component={ProjectDetails}
-              />
-              <ProtectedRoute exact path="/projects" component={ProjectList} />
-              <ProtectedRoute
-                exact
-                path="/projects/:id/tasks/:taskId"
-                component={TaskDetails}
-              />
-            </>
-          )}
-          <Route component={Route404} />
-        </Switch>
+        <div className="container">
+          <Switch>
+            {loggedInUser ? (
+              <>
+                <ProtectedRoute
+                  exact
+                  path="/projects"
+                  component={ProjectList}
+                />
+                <ProtectedRoute
+                  exact
+                  path="/projects/:id/tasks/:taskId"
+                  component={TaskDetails}
+                />
+                <ProtectedRoute
+                  exact
+                  path="/projects/:id"
+                  component={ProjectDetails}
+                />
+                <ProtectedRoute exact path="/" component={Home} />
+              </>
+            ) : (
+              <>
+                <Route
+                  exact
+                  path="/signup"
+                  render={props => <Signup getUser={getTheUser} {...props} />}
+                />
+                <Route
+                  exact
+                  path="/"
+                  render={props => <Login getUser={getTheUser} {...props} />}
+                />
+                <ProtectedRoute
+                  exact
+                  path="/projects/:id"
+                  component={ProjectDetails}
+                />
+                <ProtectedRoute
+                  exact
+                  path="/projects"
+                  component={ProjectList}
+                />
+                <ProtectedRoute
+                  exact
+                  path="/projects/:id/tasks/:taskId"
+                  component={TaskDetails}
+                />
+              </>
+            )}
+            <Route component={Route404} />
+          </Switch>
+        </div>
       </div>
     </UserContext.Provider>
   );

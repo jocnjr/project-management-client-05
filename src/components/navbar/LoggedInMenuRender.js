@@ -11,17 +11,14 @@ export const LoggedInMenuRender = ({ username, logoutUser }) => {
           </Link>
         </div>
       </div>
-      <ul>
-        <li> Welcome, {username} </li>
-        <li>
-          <Link to="/projects">Projects</Link>
-        </li>
-        <li>
-          <Link to="/">
-            <button onClick={logoutUser}> Logout </button>
-          </Link>
-        </li>
-      </ul>
+      <div className="navbar-end">
+        <div className="navbar-item">Welcome, {username}</div>
+        <div className="navbar-item">
+          <button className="button is-small" onClick={logoutUser}>
+            Logout
+          </button>
+        </div>
+      </div>
     </nav>
   );
 };

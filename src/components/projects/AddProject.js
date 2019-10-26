@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Input from "../forms/Input";
 import Textarea from "../forms/Textarea";
@@ -12,7 +12,7 @@ const AddProject = ({ getData }) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/projects`,
         { title, description, imageUrl },
         { withCredentials: true }
