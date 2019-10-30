@@ -19,7 +19,8 @@ const Signup = ({ getUser, history }) => {
       getUser(response);
       history.push("/projects");
     } catch (error) {
-      handleMessage(error.message);
+      handleMessage(error.response.data.message);
+      console.error(error);
     }
   };
   return (

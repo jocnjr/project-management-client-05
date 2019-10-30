@@ -59,7 +59,6 @@ const ProjectDetails = ({ loggedInUser, history, ...props }) => {
     if (!project.title) {
       getSingleProject();
     } else {
-      // pass the project and method getSingleProject() as a props down to AddTask component
       return <AddTask theProject={project} getTheProject={getSingleProject} />;
     }
   };
@@ -88,16 +87,13 @@ const ProjectDetails = ({ loggedInUser, history, ...props }) => {
           </p>
         )}
       </UserContext.Consumer>
-      {/* show the task heading only if there are tasks */}
       {project.tasks && project.tasks.length > 0 && (
         <h3 className="subtitle is-5">Tasks </h3>
       )}
-      {/* map through the array of tasks and... */}
       {project.tasks &&
         project.tasks.map((task, index) => {
           return (
             <div key={index}>
-              {/* ... make each task's title a link that goes to the task details page */}
               <Link to={`/projects/${project._id}/tasks/${task._id}`}>
                 {task.title}
               </Link>
