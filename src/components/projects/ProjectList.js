@@ -1,41 +1,39 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import AddProject from "./AddProject"; // <== !!
+import AddProject from "./AddProject";
 
-class ProjectList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { listOfProjects: [] };
-    this.getAllProjects = this.getAllProjects.bind(this);
-  }
+const ProjectList = () => {
+  const [listOfProjects, updateProjects] = useState(null);
 
-  getAllProjects() {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/projects`, {
-        withCredentials: true
-      })
-      .then(responseFromApi => {
-        this.setState({
-          listOfProjects: responseFromApi.data
-        });
-      });
-  }
+  useEffect(() => {
+    if (!listOfProjects) getAllProjects();
+  });
 
-  componentDidMount() {
-    this.getAllProjects();
-  }
+  const getAllProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/projects`,
+        {
+          withCredentials: true
+        }
+      );
+      updateProjects(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  render() {
-    return (
-      <div>
-        <div style={{ width: "60%", float: "left" }}>
-          {this.state.listOfProjects.map(project => {
+  return (
+    <div>
+      <div style={{ width: "60%", float: "left" }}>
+        {listOfProjects &&
+          listOfProjects.map(project => {
             return (
               <div key={project._id}>
                 <Link to={`/projects/${project._id}`}>
-                  <h3>{project.title}</h3>
+                  <h1 className="title is-2">{project.title}</h1>
                 </Link>
                 {/* 🥁 added so the tasks can be displayed:  🥁 */}
                 <ul>
@@ -47,13 +45,12 @@ class ProjectList extends Component {
               </div>
             );
           })}
-        </div>
-        <div style={{ width: "40%", float: "right" }}>
-          <AddProject getData={this.getAllProjects} /> {/* <== !!! */}
-        </div>
       </div>
-    );
-  }
-}
+      <div style={{ width: "40%", float: "right" }}>
+        <AddProject getData={getAllProjects} /> {/* <== !!! */}
+      </div>
+    </div>
+  );
+};
 
 export default ProjectList;

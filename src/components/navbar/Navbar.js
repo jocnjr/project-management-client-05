@@ -1,77 +1,35 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import AuthService from "../auth/auth-service";
 import UserContext from "../../context/UserContext";
+import { PublicMenuRender } from "./PublicMenuRender";
+import { LoggedInMenuRender } from "./LoggedInMenuRender";
 
-class Navbar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { loggedInUser: null };
-    this.service = new AuthService();
-    this.logoutUser = this.logoutUser.bind(this);
-  }
+const Navbar = ({ getUser }) => {
+  const logoutUser = async () => {
+    const service = new AuthService();
 
-  componentDidUpdate(prevProps) {
-    if (this.props.userInSession !== prevProps.userInSession) {
-      this.setState({ loggedInUser: this.props.userInSession });
+    try {
+      await service.logout();
+      getUser(null);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
-  logoutUser() {
-    this.service.logout().then(() => {
-      this.setState({ loggedInUser: null });
-      this.props.getUser(null);
-    });
-  }
-
-  render() {
-    if (this.state.loggedInUser) {
-      return (
-        <UserContext.Consumer>
-          {context => {
-            console.log("this is the context: ", context);
-            return (
-              <nav className="navbar">
-                <ul>
-                  <li>Welcome, {context.username}</li>
-                  <li>
-                    <Link to="/projects" style={{ textDecoration: "none" }}>
-                      Projects
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/">
-                      <button onClick={this.logoutUser}>Logout</button>
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-            );
-          }}
-        </UserContext.Consumer>
-      );
-    } else {
-      return (
-        <div>
-          <nav className="navbar">
-            <ul>
-              <li>
-                <Link to="/" style={{ textDecoration: "none" }}>
-                  Login
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/signup" style={{ textDecoration: "none" }}>
-                  Signup
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      );
-    }
-  }
-}
+  return (
+    <UserContext.Consumer>
+      {user =>
+        user ? (
+          <LoggedInMenuRender
+            username={user.username}
+            logoutUser={logoutUser}
+          />
+        ) : (
+          <PublicMenuRender />
+        )
+      }
+    </UserContext.Consumer>
+  );
+};
 
 export default Navbar;
